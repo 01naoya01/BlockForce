@@ -6,12 +6,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
+
+import org.w3c.dom.Text;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,9 +19,11 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class Play extends AppCompatActivity {
-    Timer timer = new Timer();
-    Tet game = new Tet();
-    int speed=1000;
+    private Timer timer = new Timer();
+    private Tet game = new Tet();
+    private int period=1000;
+    final Handler handler = new Handler();
+    boolean sw = TRUE;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,24 +31,48 @@ public class Play extends AppCompatActivity {
 
         game.init();
         FieldDraw(game);
-        final Handler handler = new Handler();
+        TextView v = findViewById(R.id.Level);
+        v.setText("Level\n"+game.getLevel());
+        v = findViewById(R.id.Lines);
+        v.setText("Lines\n"+game.getDelete_count());
+        repeat(handler);
+    }
+
+    public void repeat(final Handler handler){
+        final TextView special = findViewById(R.id.SpecialFormView);
         timer.schedule( new TimerTask(){
             @Override
             public void run() {
                 // handlerを通じてUI Threadへ処理をpost
                 handler.post(new Runnable() {
                     public void run() {
-                        //一定時間毎の処理をここに記述
-                        if(!game.update()){
-                            //ゲームオーバー時の処理
-                            GameOver();
+                        if(sw){
+                            //一定時間毎の処理をここに記述
+                            if(!game.update()){
+                                //ゲームオーバー時の処理
+                                GameOver();
+                            }
+                            special.setText("After\n"+game.getCount()+"turns");
+                            FieldDraw(game);
                         }
-                        speed=200;
-                        FieldDraw(game);
+                        sw=TRUE;
                     }
                 });
             }
-        }, 0, speed);
+        }, 0, period);
+    }
+
+    public void LevelCheck(){
+        TextView v = findViewById(R.id.Level);
+        v.setText("Level\n"+game.getLevel());
+        v = findViewById(R.id.Lines);
+        v.setText("Lines\n"+game.getDelete_count());
+
+        period=1000-100*game.getLevel();
+        timer.cancel();
+        timer=new Timer();
+        sw=FALSE;
+        repeat(handler);
     }
 
     public void GameOver(){
@@ -68,13 +93,22 @@ public class Play extends AppCompatActivity {
     }
 
     public void Under_onClick(View view) {
+        TextView special = findViewById(R.id.SpecialFormView);
+        if(game.getCount()==4){
+            special.setText("After\n"+20+"turns");
+        }else{
+            special.setText("After\n"+(game.getCount()-1)+"turns");
+        }
         if(game.under()){
             GameOver();
         }
         FieldDraw(game);
+        LevelCheck();
     }
+
     double cx=0,cy=0;
     int sensitivity=50;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -86,12 +120,10 @@ public class Play extends AppCompatActivity {
                 if((cx-event.getX())>sensitivity){
                     //左にスライドした場合の処理
                     game.move(FALSE);
-                    //Log.d("slide","Left");
                     cx=event.getX();
                 }else if((cx-event.getX())<-sensitivity){
                     //右にスライドした場合の処理
                     game.move(TRUE);
-                    //Log.d("slide","Right");
                     cx=event.getX();
                 }
                 if((cy-event.getY())<-sensitivity){
@@ -103,8 +135,6 @@ public class Play extends AppCompatActivity {
                 break;
             case MotionEvent.ACTION_UP:
         }
-
-        Button a = findViewById(R.id.button3);
         return true;
     }
 

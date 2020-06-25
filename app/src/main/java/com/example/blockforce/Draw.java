@@ -37,7 +37,7 @@ public class Draw extends View {
         super.onDraw(canvas);
         Paint p;
         canvas.drawColor(Color.BLACK);
-        int initx = 220 ,inity = 300 ,ratio=50;
+        int initx = 220 ,inity = 250 ,ratio=50;
         for(int i = 3; i < game.getField().length; i++){
             for(int j = 0; j < game.getField()[i].length; j++){
                 p=Pcolor(game.getField()[i][j],40);
@@ -50,10 +50,13 @@ public class Draw extends View {
             for(int i = 0; i < game.getNextForm()[k].length; i++){
                 for(int j = 0; j < game.getNextForm()[k][i].length; j++){
                     p=Pcolor(game.getNextForm()[k][i][j],18);
+                    if(k==3)k=4;
                     canvas.drawPoint(ratio * j + initx,ratio * (i-3) + inity+k*120 ,p);
+                    if(k==4)k=3;
                 }
             }
         }
+
     }
 
     public Paint Pcolor(int n, int size){

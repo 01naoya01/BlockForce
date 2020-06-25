@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Random;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -43,11 +42,24 @@ public class Tet {
         return field;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getDelete_count() {
+        return delete_count;
+    }
+
     public int[][][] getNextForm(){
-        int next [][][]=new int[3][][];
+        int next [][][]=new int[4][][];
         next[0]=nextForm1;
         next[1]=nextForm2;
         next[2]=nextForm3;
+        next[3]=specialForm;
         return next;
     }
 
@@ -166,6 +178,9 @@ public class Tet {
     private int nextForm3[][] = new int [5][5];
     private int specialForm[][] = new int [5][5];
     private int count = 0;
+    private int level=1;
+    private int delete_count=0;
+    private int check_delete_count=0;
 
     //最初の初期化，次，その次，さらに次のブロックも格納
     public void init(){
@@ -216,11 +231,23 @@ public class Tet {
         currentForm=nextForm1;
         nextForm1=nextForm2;
         nextForm2=nextForm3;
-        try{
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            nextForm3=Default_block[random.nextInt(7)+1];
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        if(count==4){
+            nextForm3=specialForm;
+            try{
+                SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+                specialForm=Default_block[random.nextInt(7)+8];
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            count=20;
+        }else{
+            try{
+                SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+                nextForm3=Default_block[random.nextInt(7)+1];
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            count--;
         }
         currentX=3;
         currentY=7;
@@ -260,12 +287,17 @@ public class Tet {
                 }
             }
             if(judge) {
+                delete_count++;
                 for(int k = i; k > 2; k--){
                     for(int l = 0; l < field[k].length; l++){
                         field[k][l]=field[k-1][l];
                     }
                 }
                 i++;
+            }
+            if(delete_count-check_delete_count==10){
+                check_delete_count=delete_count;
+                level++;
             }
         }
     }
@@ -318,7 +350,6 @@ public class Tet {
     public boolean under(){
         underComp(currentForm);
         DeleteCheck();
-        debugField();
         if(!newBlock()){
             return TRUE;
         }
