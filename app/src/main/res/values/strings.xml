@@ -3,4 +3,11 @@
     <string name="Start">Start</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="blockforce">BlockForce</string>
+    <string name="how_to_play">How to play</string>
+    <string name="rotate_right">Rotate right</string>
+    <string name="rotate_left">Rotate left</string>
+    <string name="move_block_down">Move block down</string>
+    <string name="next">Next</string>
+    <string name="after_n20turns">After\n20turns</string>
 </resources>

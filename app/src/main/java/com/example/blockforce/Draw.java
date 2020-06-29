@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -14,7 +13,6 @@ public class Draw extends View {
     Tet game = new Tet();
     public Draw(Context context) {
         super(context);
-        this.game = game;
     }
 
     public void setField(Tet game) {
@@ -24,12 +22,10 @@ public class Draw extends View {
 
     public Draw(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        this.game = game;
     }
 
     public Draw(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.game = game;
     }
 
     @Override
