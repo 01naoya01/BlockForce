@@ -52,7 +52,7 @@ public class Play extends AppCompatActivity {
                                 //ゲームオーバー時の処理
                                 GameOver();
                             }
-                            special.setText(String.format("After\n%dturns", game.getCount()));
+                            special.setText(String.format("After%dturns", game.getCount()));
                             FieldDraw(game);
                         }
                         sw=TRUE;
@@ -97,9 +97,9 @@ public class Play extends AppCompatActivity {
     public void Under_onClick(View view) {
         TextView special = findViewById(R.id.SpecialFormView);
         if(game.getCount()==4){
-            special.setText("after\n20turns");
+            special.setText("After20turns");
         }else{
-            special.setText(String.format("After\n%dturns", game.getCount() - 1));
+            special.setText(String.format("After%dturns", game.getCount() - 1));
         }
         if(game.under()){
             GameOver();

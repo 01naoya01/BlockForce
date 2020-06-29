@@ -43,18 +43,19 @@ public class Draw extends View {
                 canvas.drawPoint((ratio * j + initx),(ratio * (i-3) + inity), p);
             }
         }
-        initx = 120*conv;
+        initx = 110*conv;
         inity = 60*conv;
-        ratio = 12*conv;
+        ratio = 10*conv;
         for(int k=0; k < game.getNextForm().length; k++){
             for(int i = 0; i < game.getNextForm()[k].length; i++){
                 for(int j = 0; j < game.getNextForm()[k][i].length; j++){
-                    p=Pcolor(game.getNextForm()[k][i][j], (int)(8*conv));
+                    p=Pcolor(game.getNextForm()[k][i][j], (int)(6*conv));
                     float fk = k;
                     if(k==3)fk= (float) 3.2;
                     canvas.drawPoint((ratio * j + initx + fk * 50*conv),(ratio * (i-3) + inity), p);
                 }
             }
+            initx +=5*conv;
         }
 
     }
