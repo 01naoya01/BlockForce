@@ -9,5 +9,6 @@
     <string name="rotate_left">Rotate left</string>
     <string name="move_block_down">Move block down</string>
     <string name="next">Next</string>
-    <string name="after_n20turns">After\n20turns</string>
+    <string name="after_n20turns">After20turns</string>
+    <string name="Explain">jh</string>
 </resources>

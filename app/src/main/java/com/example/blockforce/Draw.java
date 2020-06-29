@@ -10,7 +10,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 public class Draw extends View {
+    float conv = getResources().getDisplayMetrics().density;
     Tet game = new Tet();
+
     public Draw(Context context) {
         super(context);
     }
@@ -30,25 +32,27 @@ public class Draw extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
         super.onDraw(canvas);
         Paint p;
         canvas.drawColor(Color.BLACK);
-        int initx = 220 ,inity = 250 ,ratio=50;
+        float initx = 80*conv ,inity = 100*conv ,ratio=18*conv;
         for(int i = 3; i < game.getField().length; i++){
             for(int j = 0; j < game.getField()[i].length; j++){
-                p=Pcolor(game.getField()[i][j],40);
-                canvas.drawPoint(ratio * j + initx,ratio * (i-3) + inity ,p);
+                p=Pcolor(game.getField()[i][j],(int)(12*conv));
+                canvas.drawPoint((ratio * j + initx),(ratio * (i-3) + inity), p);
             }
         }
-        initx = 950;
-        ratio=25;
+        initx = 120*conv;
+        inity = 60*conv;
+        ratio = 12*conv;
         for(int k=0; k < game.getNextForm().length; k++){
             for(int i = 0; i < game.getNextForm()[k].length; i++){
                 for(int j = 0; j < game.getNextForm()[k][i].length; j++){
-                    p=Pcolor(game.getNextForm()[k][i][j],18);
-                    if(k==3)k=4;
-                    canvas.drawPoint(ratio * j + initx,ratio * (i-3) + inity+k*120 ,p);
-                    if(k==4)k=3;
+                    p=Pcolor(game.getNextForm()[k][i][j], (int)(8*conv));
+                    float fk = k;
+                    if(k==3)fk= (float) 3.2;
+                    canvas.drawPoint((ratio * j + initx + fk * 50*conv),(ratio * (i-3) + inity), p);
                 }
             }
         }
