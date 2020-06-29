@@ -1,17 +1,15 @@
 package com.example.blockforce;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-
-import org.w3c.dom.Text;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,6 +23,7 @@ public class Play extends AppCompatActivity {
     final Handler handler = new Handler();
     boolean sw = TRUE;
     @Override
+    @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
@@ -32,9 +31,9 @@ public class Play extends AppCompatActivity {
         game.init();
         FieldDraw(game);
         TextView v = findViewById(R.id.Level);
-        v.setText("Level\n"+game.getLevel());
+        v.setText(String.format("Level\n%d", game.getLevel()));
         v = findViewById(R.id.Lines);
-        v.setText("Lines\n"+game.getDelete_count());
+        v.setText(String.format("Lines\n%d", game.getDelete_count()));
         repeat(handler);
     }
 
@@ -45,6 +44,7 @@ public class Play extends AppCompatActivity {
             public void run() {
                 // handlerを通じてUI Threadへ処理をpost
                 handler.post(new Runnable() {
+                    @SuppressLint("DefaultLocale")
                     public void run() {
                         if(sw){
                             //一定時間毎の処理をここに記述
@@ -52,7 +52,7 @@ public class Play extends AppCompatActivity {
                                 //ゲームオーバー時の処理
                                 GameOver();
                             }
-                            special.setText("After\n"+game.getCount()+"turns");
+                            special.setText(String.format("After\n%dturns", game.getCount()));
                             FieldDraw(game);
                         }
                         sw=TRUE;
@@ -62,11 +62,12 @@ public class Play extends AppCompatActivity {
         }, 0, period);
     }
 
+    @SuppressLint("DefaultLocale")
     public void LevelCheck(){
         TextView v = findViewById(R.id.Level);
-        v.setText("Level\n"+game.getLevel());
+        v.setText(String.format("Level\n%d", game.getLevel()));
         v = findViewById(R.id.Lines);
-        v.setText("Lines\n"+game.getDelete_count());
+        v.setText(String.format("Lines\n%d", game.getDelete_count()));
 
         period=1000-100*game.getLevel();
         timer.cancel();
@@ -76,7 +77,7 @@ public class Play extends AppCompatActivity {
     }
 
     public void GameOver(){
-        Toast.makeText(Play.this,"Game Over !!",Toast.LENGTH_LONG).show();
+        Toast.makeText(Play.this,"Game Over !!  Lines "+game.getDelete_count(),Toast.LENGTH_LONG).show();
         timer.cancel();
         finish();
         overridePendingTransition(0, 0);
@@ -92,12 +93,13 @@ public class Play extends AppCompatActivity {
         FieldDraw(game);
     }
 
+    @SuppressLint("DefaultLocale")
     public void Under_onClick(View view) {
         TextView special = findViewById(R.id.SpecialFormView);
         if(game.getCount()==4){
-            special.setText("After\n"+20+"turns");
+            special.setText("after\n20turns");
         }else{
-            special.setText("After\n"+(game.getCount()-1)+"turns");
+            special.setText(String.format("After\n%dturns", game.getCount() - 1));
         }
         if(game.under()){
             GameOver();

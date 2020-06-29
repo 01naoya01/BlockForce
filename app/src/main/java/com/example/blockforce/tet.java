@@ -9,7 +9,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class Tet {
-    private int field[][]= new int[][]{
+    private int[][] field = new int[][]{
             {99,0,0,0,0,0,0,0,0,0,0,0,0,99},
             {99,0,0,0,0,0,0,0,0,0,0,0,0,99},
             {99,0,0,0,0,0,0,0,0,0,0,0,0,99},
@@ -55,7 +55,7 @@ public class Tet {
     }
 
     public int[][][] getNextForm(){
-        int next [][][]=new int[4][][];
+        int[][][] next =new int[4][][];
         next[0]=nextForm1;
         next[1]=nextForm2;
         next[2]=nextForm3;
@@ -63,7 +63,7 @@ public class Tet {
         return next;
     }
 
-    private int Default_block[][][] = new int[][][]{
+    private int[][][] Default_block = new int[][][]{
             {
                     {0,0,0,0,0},
                     {0,0,0,0,0},
@@ -148,6 +148,7 @@ public class Tet {
                     {8,8,0,8,8},
                     {0,0,0,0,0}
             },
+            //変更なし
             {
                     {0,0,0,0,0},
                     {0,8,0,8,0},
@@ -171,12 +172,12 @@ public class Tet {
             },
     };
 
-    private int currentForm[][] = new int[5][5];
+    private int[][] currentForm = new int[5][5];
     private int currentX,currentY;
-    private int nextForm1[][] = new int [5][5];
-    private int nextForm2[][] = new int [5][5];
-    private int nextForm3[][] = new int [5][5];
-    private int specialForm[][] = new int [5][5];
+    private int[][] nextForm1 = new int [5][5];
+    private int[][] nextForm2 = new int [5][5];
+    private int[][] nextForm3 = new int [5][5];
+    private int[][] specialForm = new int [5][5];
     private int count = 0;
     private int level=1;
     private int delete_count=0;
@@ -202,17 +203,20 @@ public class Tet {
     }
 
     //選択してるブロックtarget(5×5)をfieldのx,yの位置に反映する,反映できたらTRUE，反映する場所に何かしらのブロックがあればFALSE
-    public boolean reflection(int target[][], int x, int y ,boolean sw){
-        int temp[][]=new int[26][14];
+    public boolean reflection(int[][] target, int x, int y , boolean sw){
+        int[][] temp =new int[26][14];
         for(int i = 0; i < temp.length; i++){
-            for(int j = 0; j < temp[i].length; j++){
-                temp[i][j] = field[i][j];
-            }
+            System.arraycopy(field[i], 0, temp[i], 0, temp[i].length);
         }
         for(int i = -2; i < 3; i++){
             for(int j = -2; j < 3; j++){
                 if(target[i+2][j+2] != 0){
-                    if(field[x+i][y+j] > 0){
+                    if(y+j>=0 && y+j<=13){
+                        if(field[x+i][y+j] > 0){
+                            field=temp;
+                            return FALSE;
+                        }
+                    }else{
                         field=temp;
                         return FALSE;
                     }
@@ -253,10 +257,10 @@ public class Tet {
         currentY=7;
         if(!reflection(currentForm, currentX, currentY,TRUE)){
             Log.d("gameover","gameover");
-            return FALSE;
+            return TRUE;
         }
         underLocation();
-        return TRUE;
+        return FALSE;
     }
 
     //現在のブロックを一段下に下げる and 下げ切ったのなら行を削除するかを確認してnewblock()呼び出し
@@ -268,8 +272,7 @@ public class Tet {
             currentX--;
             reflection(currentForm, currentX, currentY,TRUE);
             DeleteCheck();
-            debugField();
-            if(!newBlock()){
+            if(newBlock()){
                 return FALSE;
             }
         }
@@ -284,14 +287,13 @@ public class Tet {
             for(int j = 0; j < field[i].length; j++){
                 if(field[i][j] == 0) {
                     judge = FALSE;
+                    break;
                 }
             }
             if(judge) {
                 delete_count++;
                 for(int k = i; k > 2; k--){
-                    for(int l = 0; l < field[k].length; l++){
-                        field[k][l]=field[k-1][l];
-                    }
+                    System.arraycopy(field[k - 1], 0, field[k], 0, field[k].length);
                 }
                 i++;
             }
@@ -303,7 +305,7 @@ public class Tet {
     }
 
     //指定したブロックをfieldから削除
-    public void DrawDelete(int target[][], int x, int y){
+    public void DrawDelete(int[][] target, int x, int y){
         for(int i = -2; i < 3; i++){
             for(int j = -2; j < 3; j++){
                 if(target[i+2][j+2] != 0){
@@ -334,7 +336,7 @@ public class Tet {
 
     //下瞬間移動した場合の位置をfieldに反映(このままいけばここに落ちるよ！っていう位置としてfieldに-1を入れる)
     public void underLocation(){
-        int shadow[][] = new int[5][5];
+        int[][] shadow = new int[5][5];
         for(int m = 0; m < currentForm.length; m++){
             for(int n = 0; n < currentForm[m].length; n++){
                 if(currentForm[m][n]>0){
@@ -350,13 +352,13 @@ public class Tet {
     public boolean under(){
         underComp(currentForm);
         DeleteCheck();
-        if(!newBlock()){
+        if(newBlock()){
             return TRUE;
         }
         return FALSE;
     }
 
-    public void underComp(int comp[][]){
+    public void underComp(int[][] comp){
         DrawDelete(currentForm, currentX, currentY);
         for(int i=0; i<field.length; i++){
             for(int j=0; j<field[i].length; j++){
@@ -366,7 +368,7 @@ public class Tet {
             }
         }
         int x=currentX;
-        for(int i=1;;i++){
+        for(;;){
             x++;
             if(!reflection(comp,x,currentY,FALSE)){
                 x--;
@@ -378,10 +380,10 @@ public class Tet {
 
     //回転の処理,LR=trueなら右，falseなら左
     public void rotation(boolean LR){
-        if(currentForm[2][2]==6){
+        if(currentForm[2][2]==6 || currentForm[2][2]==12){
            return;
         }
-        int newBlock[][] = new int[5][5];
+        int[][] newBlock = new int[5][5];
         for(int i = 0; i < currentForm.length; i++){
             for(int j = currentForm.length-1; j >= 0; j--){
                 newBlock[i][j] = currentForm[j][i];
@@ -397,7 +399,7 @@ public class Tet {
                 }
             }
         }else{
-            int temp[]=new int[5];
+            int[] temp;
             for(int i = 0, j = 4; i < 2; i++, j--){
                 temp = newBlock[i];
                 newBlock[i] = newBlock[j];
@@ -405,12 +407,17 @@ public class Tet {
             }
         }
         DrawDelete(currentForm, currentX, currentY);
-        if(!reflection(newBlock, currentX, currentY,TRUE)){
-            //TODO ブロックが端の時に回転しない問題の修正
-            reflection(currentForm, currentX, currentY,TRUE);
-        }else{
-            currentForm=newBlock;
+
+        int [] seq = {0,1,-1,2,-2};
+        for (int value : seq) {
+            if (reflection(newBlock, currentX, (currentY + value), TRUE)) {
+                currentY += value;
+                currentForm = newBlock;
+                underLocation();
+                return;
+            }
         }
+        reflection(currentForm, currentX, currentY,TRUE);
         underLocation();
     }
 
@@ -420,7 +427,7 @@ public class Tet {
         }
     }
 
-    public void debugForm(int a[][]){
+    public void debugForm(int[][] a){
         for(int i=0; i < a.length; i++){
             Log.d("Form",i+":"+a[i][0]+a[i][1]+a[i][2]+a[i][3]+a[i][4]);
         }
