@@ -1,39 +1,44 @@
 package com.example.blockforce;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class Play extends AppCompatActivity {
-    private Timer timer = new Timer();
-    private Tet game = new Tet();
-    private int period=1000;
-    final Handler handler = new Handler();
-    boolean sw = TRUE;
+
+    private Timer timer;
+    private Tet game;
+    private int period, sensitivity;
+    private boolean sw;
+    private TextView level_view = null, Lines_view = null;
+    private final Handler handler = new Handler();
+    private double cx,cy;
+
     @Override
-    @SuppressLint("DefaultLocale")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-
+        game = new Tet();
+        sw = TRUE;
         game.init();
         FieldDraw(game);
-        TextView v = findViewById(R.id.Level);
-        v.setText(String.format("Level\n%d", game.getLevel()));
-        v = findViewById(R.id.Lines);
-        v.setText(String.format("Lines\n%d", game.getDelete_count()));
+        timer = new Timer();
+        period = 1000;
+        cx = 0; cy = 0;
+        sensitivity = 100;
+        level_view = findViewById(R.id.Level);
+        Lines_view = findViewById(R.id.Lines);
+        level_view.setText(getResources().getString(R.string.Level, game.getLevel()));
+        Lines_view.setText(getResources().getString(R.string.Lines, game.getDelete_count()));
         repeat(handler);
     }
 
@@ -44,7 +49,6 @@ public class Play extends AppCompatActivity {
             public void run() {
                 // handlerを通じてUI Threadへ処理をpost
                 handler.post(new Runnable() {
-                    @SuppressLint("DefaultLocale")
                     public void run() {
                         if(sw){
                             //一定時間毎の処理をここに記述
@@ -52,33 +56,33 @@ public class Play extends AppCompatActivity {
                                 //ゲームオーバー時の処理
                                 GameOver();
                             }
-                            special.setText(String.format("After%dturns", game.getCount()));
+                            special.setText(getResources().getString(R.string.After_turns, game.getCount()));
                             FieldDraw(game);
+                            Lines_view.setText(getResources().getString(R.string.Lines, game.getDelete_count()));
                         }
-                        sw=TRUE;
+                        sw = TRUE;
                     }
                 });
             }
         }, 0, period);
     }
 
-    @SuppressLint("DefaultLocale")
     public void LevelCheck(){
-        TextView v = findViewById(R.id.Level);
-        v.setText(String.format("Level\n%d", game.getLevel()));
-        v = findViewById(R.id.Lines);
-        v.setText(String.format("Lines\n%d", game.getDelete_count()));
+        level_view.setText(getResources().getString(R.string.Level, game.getLevel()));
+        Lines_view.setText(getResources().getString(R.string.Lines, game.getDelete_count()));
 
-        period=1000-100*game.getLevel();
+        period = 1000 - 100 * game.getLevel();
         timer.cancel();
-        timer=new Timer();
-        sw=FALSE;
+        timer = new Timer();
+        sw = FALSE;
         repeat(handler);
     }
 
     public void GameOver(){
-        Toast.makeText(Play.this,"Game Over !!  Lines "+game.getDelete_count(),Toast.LENGTH_LONG).show();
         timer.cancel();
+        Intent i = new Intent();
+        i.putExtra("Lines", game.getDelete_count());
+        setResult(RESULT_OK,i);
         finish();
         overridePendingTransition(0, 0);
     }
@@ -93,13 +97,12 @@ public class Play extends AppCompatActivity {
         FieldDraw(game);
     }
 
-    @SuppressLint("DefaultLocale")
     public void Under_onClick(View view) {
         TextView special = findViewById(R.id.SpecialFormView);
-        if(game.getCount()==4){
-            special.setText("After20turns");
+        if(game.getCount() == 4){
+            special.setText(getResources().getString(R.string.After_turns,20));
         }else{
-            special.setText(String.format("After%dturns", game.getCount() - 1));
+            special.setText(getResources().getString(R.string.After_turns,game.getCount()-1));
         }
         if(game.under()){
             GameOver();
@@ -108,30 +111,27 @@ public class Play extends AppCompatActivity {
         LevelCheck();
     }
 
-    double cx=0,cy=0;
-    int sensitivity=50;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                cx=event.getX();
-                cy=event.getY();
+                cx = event.getX();
+                cy = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if((cx-event.getX())>sensitivity){
+                if((cx - event.getX()) > sensitivity){
                     //左にスライドした場合の処理
                     game.move(FALSE);
-                    cx=event.getX();
-                }else if((cx-event.getX())<-sensitivity){
+                    cx = event.getX();
+                }else if((cx - event.getX()) < -sensitivity){
                     //右にスライドした場合の処理
                     game.move(TRUE);
-                    cx=event.getX();
+                    cx = event.getX();
                 }
-                if((cy-event.getY())<-sensitivity){
+                if((cy - event.getY()) < -sensitivity){
                     //下にスライドした場合の処理
                     game.update();
-                    cy=event.getY();
+                    cy = event.getY();
                 }
                 FieldDraw(game);
                 break;

@@ -7,8 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 public class Draw extends View {
     float conv = getResources().getDisplayMetrics().density;
     Tet game = new Tet();
@@ -22,11 +20,11 @@ public class Draw extends View {
         invalidate();
     }
 
-    public Draw(Context context, @Nullable AttributeSet attrs) {
+    public Draw(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public Draw(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public Draw(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -36,26 +34,26 @@ public class Draw extends View {
         super.onDraw(canvas);
         Paint p;
         canvas.drawColor(Color.BLACK);
-        float initx = 80*conv ,inity = 100*conv ,ratio=18*conv;
+        float initx = 80*conv ,inity = 100*conv ,ratio = 18*conv;
         for(int i = 3; i < game.getField().length; i++){
             for(int j = 0; j < game.getField()[i].length; j++){
-                p=Pcolor(game.getField()[i][j],(int)(12*conv));
-                canvas.drawPoint((ratio * j + initx),(ratio * (i-3) + inity), p);
+                p=Pcolor(game.getField()[i][j], (int)(12 * conv));
+                canvas.drawPoint((ratio * j + initx), (ratio * (i - 3) + inity), p);
             }
         }
-        initx = 110*conv;
-        inity = 60*conv;
-        ratio = 10*conv;
-        for(int k=0; k < game.getNextForm().length; k++){
+        initx = 110 * conv;
+        inity = 60 * conv;
+        ratio = 10 * conv;
+        for(int k = 0; k < game.getNextForm().length; k++){
             for(int i = 0; i < game.getNextForm()[k].length; i++){
                 for(int j = 0; j < game.getNextForm()[k][i].length; j++){
-                    p=Pcolor(game.getNextForm()[k][i][j], (int)(6*conv));
+                    p = Pcolor(game.getNextForm()[k][i][j], (int)(6 * conv));
                     float fk = k;
-                    if(k==3)fk= (float) 3.2;
-                    canvas.drawPoint((ratio * j + initx + fk * 50*conv),(ratio * (i-3) + inity), p);
+                    if(k == 3) fk = (float) 3.2;
+                    canvas.drawPoint((ratio * j + initx + fk * 50 * conv),(ratio * (i - 3) + inity), p);
                 }
             }
-            initx +=5*conv;
+            initx += 5 * conv;
         }
 
     }
